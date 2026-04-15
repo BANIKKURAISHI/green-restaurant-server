@@ -6,10 +6,8 @@ const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const app = express();
 const port = process.env.PORT || 3000;
 
-// Middleware
 app.use(cors());
 app.use(express.json());
-
 
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@menu-card.zoxv5bc.mongodb.net/?appName=menu-card`;
 
@@ -21,54 +19,48 @@ const client = new MongoClient(uri, {
   }
 });
 
-
 let foodData, reviewData, addFoods;
 
 async function run() {
   try {
-    // Database Connection
     await client.connect();
-    
-
-    foodData = client.db('foodCollection').collection("foodName");
+    const db = client.db('foodCollection');
+    foodData = db.collection("foodName");
     reviewData = client.db('reviewCollection').collection("review");
     addFoods = client.db('addFoodCollection').collection("addCart");
-
     console.log("Successfully connected to MongoDB!");
   } catch (error) {
     console.error("MongoDB Connection Error:", error);
   }
 }
-
-
 run().catch(console.dir);
 
-
-
+// Routes
 app.get('/', (req, res) => {
   res.send('Green Restaurant Server is Running!');
 });
 
 app.get("/foodList", async (req, res) => {
-  const result = await foodData.find().toArray();
-  res.send(result);
+  try {
+    if (!foodData) return res.status(500).send({ error: "Database not connected" });
+    const result = await foodData.find().toArray();
+    res.send(result);
+  } catch (err) { res.status(500).send(err); }
 });
 
 app.get("/topfood", async (req, res) => {
-  const result = await foodData.find().sort({ rating: -1 }).limit(12).toArray();
-  res.send(result);
+  try {
+    const result = await foodData.find().sort({ rating: -1 }).limit(12).toArray();
+    res.send(result);
+  } catch (err) { res.status(500).send(err); }
 });
 
 app.get("/foodList/:id", async (req, res) => {
   try {
-    const id = req.params.id;
-    if (!ObjectId.isValid(id)) return res.status(400).send({ message: "Invalid ID" });
-    const query = { _id: new ObjectId(id) };
+    const query = { _id: new ObjectId(req.params.id) };
     const result = await foodData.findOne(query);
     res.send(result);
-  } catch (error) {
-    res.status(500).send({ message: "Server error" });
-  }
+  } catch (error) { res.status(500).send(error); }
 });
 
 app.get("/feedback", async (req, res) => {
@@ -78,12 +70,6 @@ app.get("/feedback", async (req, res) => {
 
 app.post('/feedback', async (req, res) => {
   const result = await reviewData.insertOne(req.body);
-  res.send(result);
-});
-
-app.delete('/feedback/:id', async (req, res) => {
-  const query = { _id: new ObjectId(req.params.id) };
-  const result = await reviewData.deleteOne(query);
   res.send(result);
 });
 
@@ -98,22 +84,11 @@ app.post('/postFood', async (req, res) => {
 });
 
 app.delete('/postFood/:id', async (req, res) => {
-  try {
-    const id = req.params.id;
-    const query = ObjectId.isValid(id) ? { _id: new ObjectId(id) } : { _id: id };
-    const result = await addFoods.deleteOne(query);
-    res.send(result);
-  } catch (error) {
-    res.status(500).send({ message: "Delete failed" });
-  }
+  const id = req.params.id;
+  const query = ObjectId.isValid(id) ? { _id: new ObjectId(id) } : { _id: id };
+  const result = await addFoods.deleteOne(query);
+  res.send(result);
 });
 
 
 module.exports = app;
-
-
-if (process.env.NODE_ENV !== 'production') {
-  app.listen(port, () => {
-    console.log(`Local Server: http://localhost:${port}`);
-  });
-}
