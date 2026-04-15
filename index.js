@@ -12,8 +12,9 @@ app.use(express.json())
 // ! admin : green-restaurant 
 // ! pass :I0Fdn65pES0x7X7D
 
-const uri = `mongodb+srv://${process.env.DB_NAME}:${process.env.DB_PASSWORD}@menu-card.zoxv5bc.mongodb.net/?appName=menu-card`;
-
+// const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@menu-card.zoxv5bc.mongodb.net/?appName=menu-card`;
+// const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@menu-card.zoxv5bc.mongodb.net/?retryWrites=true&w=majority`;
+const uri = "mongodb+srv://green-restaurant:I0Fdn65pES0x7X7D@menu-card.zoxv5bc.mongodb.net/?appName=menu-card";
 const client = new MongoClient(uri, {
   serverApi: {
     version: ServerApiVersion.v1,
