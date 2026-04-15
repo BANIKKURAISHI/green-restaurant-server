@@ -33,7 +33,9 @@ async function run() {
     console.error("MongoDB Connection Error:", error);
   }
 }
-run().catch(console.dir);
+run().catch(err => {
+  console.log("DB failed:", err);
+});
 
 // Routes
 app.get('/', (req, res) => {
@@ -90,5 +92,7 @@ app.delete('/postFood/:id', async (req, res) => {
   res.send(result);
 });
 
-
+// app.listen(port, () => {
+//   console.log(`Server is running`);
+// });
 module.exports = app;
