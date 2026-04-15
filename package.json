@@ -3,7 +3,7 @@
     "cors": "^2.8.6",
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
-    "mongodb": "^6.3.0"
+    "mongodb": "^6.21.0"
   },
   "name": "green-restaurant-server",
   "version": "1.0.0",
