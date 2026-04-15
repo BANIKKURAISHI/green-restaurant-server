@@ -1,5 +1,9 @@
-require("dotenv").config();
+const path = require("path");
+require("dotenv").config({
+  path: path.resolve(__dirname, "../.env")
+});
 const express = require('express');
+// const express = require('express');
 const cors = require('cors');
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 
@@ -8,8 +12,11 @@ const port = process.env.PORT || 3000;
 
 app.use(cors());
 app.use(express.json());
-
-const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@menu-card.zoxv5bc.mongodb.net/?appName=menu-card`;
+const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@menu-card.zoxv5bc.mongodb.net/restaurantDB?retryWrites=true&w=majority`;
+// const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@menu-card.zoxv5bc.mongodb.net/restaurantDB?retryWrites=true&w=majority`;
+// const uri ="mongodb+srv://green-restaurant:I0Fdn65pES0x7X7D@menu-card.zoxv5bc.mongodb.net/restaurantDB?retryWrites=true&w=majority";
+// const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@menu-card.zoxv5bc.mongodb.net/?appName=menu-card`;
+// const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@menu-card.zoxv5bc.mongodb.net/?appName=menu-card`;
 
 const client = new MongoClient(uri, {
   serverApi: {
@@ -18,6 +25,8 @@ const client = new MongoClient(uri, {
     deprecationErrors: true,
   }
 });
+
+// console.log("ENV CHECK:", process.env.DB_USER, process.env.DB_PASSWORD);
 
 let foodData, reviewData, addFoods;
 
